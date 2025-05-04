@@ -1,0 +1,30 @@
+#ifndef PLANE_H
+#define PLANE_H
+
+#include <string>
+#include <list>
+#include <SFML/System/Vector3.hpp>
+
+#include "Road.h"
+#include "Runway.h"
+
+class Plane {
+private:
+	std::string model_name;
+	float required_length_to_rise, required_length_to_land;
+	float max_velocity_on_the_ground, max_acceleration, max_slowdown_accelertion, launch_speed;
+	float target_velocity_value;
+	sf::Vector3f velocity, acceleration, position;
+	sf::Vector3f direction;
+	std::list<sf::Vector3f> path;
+public:
+	sf::Vector3f get_position();
+
+	void set_max_acceleration(float new_acceleration);
+	void set_max_slowdown_accelertion(float new_acceleration);
+	void set_path(const std::list<sf::Vector3f>& path);
+
+	void follow_path();
+	void launch();
+};
+#endif
