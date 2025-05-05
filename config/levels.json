@@ -1,0 +1,25 @@
+{
+  "levels": {
+    "1": {
+      "runways": [
+        { "id": 1, "length": 150 },
+        { "id": 2, "length": 200 }
+      ],
+      "taxiways": {
+        "nodes": [
+          { "id": 1, "x": 0,   "y": 0 },
+          { "id": 2, "x": 100, "y": 0 },
+          { "id": 3, "x": 100, "y": 100 }
+        ],
+        "edges": [
+          { "u": 1, "v": 2, "cost": 100 },
+          { "u": 2, "v": 3, "cost": 100 }
+        ]
+      },
+      "arrivals": ["Biplane", "BusinessJet", "WideAirliner"],
+      "departures": ["MilitaryDrone", "Biplane", "WideAirliner"],
+      "arrival_interval":   2.0,
+      "departure_interval": 3.0
+    }
+  }
+}
