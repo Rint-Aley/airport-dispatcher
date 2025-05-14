@@ -1,7 +1,9 @@
 #ifndef LEVEL_IN_PROGRESS_H
 #define LEVEL_IN_PROGRESS_H
 
-class LevelInProgress {
+#include "Level.h"
+
+class LevelInProgress : public Level {
 private:
 	float penalty, time;
 };

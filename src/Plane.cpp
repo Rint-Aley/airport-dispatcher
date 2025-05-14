@@ -18,45 +18,107 @@ void Plane::set_max_slowdown_accelertion(float new_acceleration)
 
 }
 
-void Plane::follow_path()
+void Plane::set_path(const std::list<sf::Vector3f>& path)
 {
+	this->path = path;
+}
+
+void Plane::follow_path_on_the_ground()
+{
+	if (path.size() == 0)
+		return;
+	direction = (*path.begin() - position) / (*path.begin() - position).length();
 	if (path.size() == 1)
 	{
-		sf::Vector3f a = *path.begin(), b = *(path.begin()++);
+		sf::Vector3f a = *path.begin();
+		sf::Vector3f S = a - position;
 		float braking_path = velocity.length() * velocity.length() / 2 / max_slowdown_accelertion;
-		sf::Vector3f S = (b - position);
-		// check if S = a*-direction
 		if (S.length() <= braking_path)
 		{
 			acceleration = direction * -(velocity.length() * velocity.length() / 2 / S.length());
-			velocity += acceleration;
-			position += velocity;
+			velocity += acceleration; // * dt
 		}
 		else if (velocity.length() < max_velocity_on_the_ground)
 		{
-			// change acceleration???
-			velocity += acceleration;
+			acceleration = direction * max_acceleration_on_the_ground;
+			velocity += acceleration; // * dt
+			if (velocity.length() >= max_velocity_on_the_ground) { 
+				velocity = direction * max_velocity_on_the_ground;
+			}
 		}
-		position += velocity;
+		position += velocity; // * dt
+		S = a - position;
+		if (S.x * direction.x < 0 || S.y * direction.y < 0)
+		{
+			position = a;
+			velocity = sf::Vector3f(0, 0, 0);
+			acceleration = sf::Vector3f(0, 0, 0);
+			path.pop_front();
+		}
 	}
 	if (path.size() >= 2)
 	{
-		sf::Vector3f a = *path.begin(), b = *(path.begin()++), c = *(path.begin()++++);
-		sf::Vector3f S = (b - position);
-		// check if S = a*-direction
+		sf::Vector3f a = *path.begin(), b = *(path.begin()++);
+		if (velocity.length() < max_velocity_on_the_ground)
+		{
+			acceleration = direction * max_acceleration_on_the_ground;
+			velocity += acceleration; // * dt
+			if (velocity.length() >= max_velocity_on_the_ground)
+			{
+				velocity = direction * max_velocity_on_the_ground;
+			}
+		}
+		position += velocity; // * dt
+		sf::Vector3f S = a - position;
+		while ((S.x * direction.x < 0 || S.y * direction.y < 0) && path.size() > 0)
+		{
+			path.pop_front();
+			position = a;
+			direction = (b - a) / (b - a).length();
+			position += direction * S.length();
+			if (path.size() == 1) {
+				S = b - position;
+				if (S.x * direction.x < 0 || S.y * direction.y < 0) {
+					position = b;
+					velocity = sf::Vector3f(0, 0, 0);
+					acceleration = sf::Vector3f(0, 0, 0);
+					path.pop_front();
+					return;
+				}
+			}
+			a = *path.begin(), b = *(path.begin()++);
+			S = a - position;
+		}
 	}
+}
+
+void Plane::follow_path_in_the_sky()
+{
+	sf::Vector3f a = *path.begin();
+	sf::Vector3f S = (a - position);
 }
 
 void Plane::launch()
 {
-	if (velocity.length() == 0) 
+	if (velocity.length() <= launch_speed)
 	{
 		acceleration = direction * max_acceleration;
 	}
 	else if (velocity.length() >= launch_speed)
 	{
-		acceleration.z = 1;
+		direction.z = 1;
+		// normalize direciton
+		acceleration = direction * max_acceleration;
 	}
-	velocity += acceleration;
-	position += velocity;
+	// if (position.z >= some value)
+	//		stop rising
+	velocity += acceleration; // * dt
+	position += velocity; // * dt
 }
+
+void Plane::land()
+{
+	sf::Vector3f a = *path.begin(), b = *(path.begin()++);
+
+}
+
