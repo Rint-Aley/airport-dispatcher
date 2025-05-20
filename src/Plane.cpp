@@ -1,7 +1,7 @@
 #include "Plane.h"
 #include <SFML/Graphics/RectangleShape.hpp>
 
-Plane::Plane() : name(), velocity{ 0, 0, 0 }, acceleration{ 0, 0, 0 }, position{ 0, 0, 0 }, path(), direction{ 0, 0, 0 }, max_velocity_on_the_ground(300), max_acceleration_on_the_ground(30), max_slowdown_accelertion(100)
+Plane::Plane() : order(Order::FollowingPath), name(), velocity{ 0, 0, 0 }, acceleration{ 0, 0, 0 }, position{ 0, 0, 0 }, path(), direction{ 0, 0, 0 }, max_velocity_on_the_ground(300), max_acceleration_on_the_ground(30), max_velocity(1000), max_acceleration(1000), max_slowdown_acceleration(100)
 {
 
 }
@@ -29,14 +29,26 @@ void Plane::set_path(const std::list<sf::Vector3f>& path)
 	this->path = path;
 }
 
-void Plane::follow_path_on_the_ground(sf::Time dt)
+void Plane::follow_path(sf::Time dt)
 {
 	if (path.size() == 0)
 		return;
-	if ((*path.begin() - position).length() == 0) {
+	if ((*path.begin() - position).length() == 0)
+	{
 		path.pop_front();
-		follow_path_on_the_ground(dt);
+		follow_path(dt);
 		return;
+	}
+	float max_velocity, max_acceleration;
+	if (order == Order::FollowingPath)
+	{
+		max_velocity = max_velocity_on_the_ground;
+		max_acceleration = max_acceleration_on_the_ground;
+	}
+	else
+	{
+		max_velocity = this->max_velocity;
+		max_acceleration = this->max_acceleration;
 	}
 	direction = (*path.begin() - position) / (*path.begin() - position).length();
 	velocity = direction * velocity.length();
@@ -44,18 +56,18 @@ void Plane::follow_path_on_the_ground(sf::Time dt)
 	{
 		sf::Vector3f a = *path.begin();
 		sf::Vector3f S = a - position;
-		float braking_path = velocity.length() * velocity.length() / 2 / max_slowdown_accelertion;
+		float braking_path = velocity.length() * velocity.length() / 2 / max_slowdown_acceleration;
 		if (S.length() <= braking_path)
 		{
 			acceleration = direction * -(velocity.length() * velocity.length() / 2 / S.length());
 			velocity += acceleration * dt.asSeconds();
 		}
-		else if (velocity.length() < max_velocity_on_the_ground)
+		else if (velocity.length() < max_velocity)
 		{
-			acceleration = direction * max_acceleration_on_the_ground;
+			acceleration = direction * max_acceleration;
 			velocity += acceleration * dt.asSeconds();
-			if (velocity.length() >= max_velocity_on_the_ground) { 
-				velocity = direction * max_velocity_on_the_ground;
+			if (velocity.length() >= max_velocity) {
+				velocity = direction * max_velocity;
 			}
 		}
 		position += velocity * dt.asSeconds();
@@ -71,13 +83,13 @@ void Plane::follow_path_on_the_ground(sf::Time dt)
 	if (path.size() >= 2)
 	{
 		sf::Vector3f a = *path.begin(), b = *(++path.begin());
-		if (velocity.length() < max_velocity_on_the_ground)
+		if (velocity.length() < max_velocity)
 		{
-			acceleration = direction * max_acceleration_on_the_ground;
+			acceleration = direction * max_acceleration;
 			velocity += acceleration * dt.asSeconds();
-			if (velocity.length() >= max_velocity_on_the_ground)
+			if (velocity.length() >= max_velocity)
 			{
-				velocity = direction * max_velocity_on_the_ground;
+				velocity = direction * max_velocity;
 			}
 		}
 		position += velocity * dt.asSeconds();
@@ -102,12 +114,6 @@ void Plane::follow_path_on_the_ground(sf::Time dt)
 			S = a - position;
 		}
 	}
-}
-
-void Plane::follow_path_in_the_sky()
-{
-	sf::Vector3f a = *path.begin();
-	sf::Vector3f S = (a - position);
 }
 
 void Plane::launch()

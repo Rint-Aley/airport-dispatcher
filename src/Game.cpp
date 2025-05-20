@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <SFML/Window/VideoMode.hpp>
 #include <list>
+#include <iostream>
 
 Game::Game() : state(GameState::InLobby), current_level(nullptr)
 {
@@ -19,9 +20,9 @@ void Game::launch_game()
 	// For testing
 	Plane plane;
 	std::list<sf::Vector3f> a;
-	a.push_back({ 100, 100, 0 });
-	//a.push_back({ 100, 1000, 0 });
-	//a.push_back({ 1000, 500, 0 });
+	a.push_back({ 100, 100, 10 });
+	a.push_back({ 100, 1000, 100 });
+	a.push_back({ 1000, 500, 12 });
 	plane.set_path(a);
 
 	while (window.isOpen())
@@ -34,8 +35,9 @@ void Game::launch_game()
 
 		dt = clock.restart();
 		// Physic sim
-		plane.follow_path_on_the_ground(dt);
-		
+		plane.follow_path(dt);
+		std::cout << plane.get_position().z << '\n';
+
 		// Event handling
 		
 		// Drawing

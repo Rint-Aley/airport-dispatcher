@@ -18,8 +18,8 @@ private:
 	};
 	std::string name;
 	float required_length_to_rise, required_length_to_land;
-	float max_velocity_on_the_ground, max_acceleration_on_the_ground, max_acceleration, max_slowdown_accelertion, launch_speed;
-	float target_velocity_value;
+	float max_velocity_on_the_ground, max_velocity, max_acceleration_on_the_ground, max_acceleration, max_slowdown_acceleration, launch_speed;
+	//float target_velocity_value;
 	sf::Vector3f velocity, acceleration, position;
 	sf::Vector3f direction;
 	std::list<sf::Vector3f> path;
@@ -33,8 +33,7 @@ public:
 	void set_max_slowdown_accelertion(float new_acceleration);
 	void set_path(const std::list<sf::Vector3f>& path);
 
-	void follow_path_on_the_ground(sf::Time dt);
-	void follow_path_in_the_sky();
+	void follow_path(sf::Time dt);
 	void launch();
 	void land();
 
