@@ -18,14 +18,14 @@ add_executable(
     airport_simulator
     src/main.cpp
     src/Plane.h
-    src/InPlane.h
     src/Runway.h
     src/Player.h
     src/Plane.cpp
     src/Airport.h
     src/Level.h
     src/LevelInProgress.h
- "src/EventHandler.h")
+    src/Game.cpp
+)
 
 target_compile_features(airport_simulator PRIVATE cxx_std_17)
 target_link_libraries(airport_simulator PRIVATE SFML::Graphics)
