@@ -6,9 +6,17 @@
 #include "Plane.h"
 
 class Level {
-private:
+protected:
 	std::vector<Airport> airports;
 	std::vector<Plane> planes;
+public:
+	Level();
+
+	const std::vector<Plane>& get_planes() const;
+	const std::vector<Airport>& get_airports() const;
+
+	void add_plane();
+	
 };
 
 #endif

@@ -1,4 +1,7 @@
-#pragma once 
+#ifndef EVENT_H
+#define EVENT_H
+
+#include "Plane.h"
 
 struct Event {
 	enum {
@@ -6,9 +9,8 @@ struct Event {
 		PlaneLand,
 		PlaneCrush,
 	} event;
+	Plane plane;
 	void* additional_info;
 };
 
-class EventHandler {
-	void virtual send_event(const Event& event) = delete;
-};
+#endif

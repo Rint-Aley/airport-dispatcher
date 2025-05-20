@@ -27,7 +27,7 @@ private:
 public:
 	explicit Plane();
 
-	sf::Vector3f get_position();
+	sf::Vector3f get_position() const { return position; }
 
 	void set_max_acceleration(float new_acceleration);
 	void set_max_slowdown_accelertion(float new_acceleration);
@@ -37,6 +37,6 @@ public:
 	void launch();
 	void land();
 
-	void draw(sf::RenderWindow& window);
+	void draw(sf::RenderWindow& window) const;
 };
 #endif

@@ -21,10 +21,11 @@ add_executable(
     src/Runway.h
     src/Player.h
     src/Plane.cpp
-    src/Airport.h
     src/Level.h
-    src/LevelInProgress.h
+    src/LevelInProgress.cpp
     src/Game.cpp
+    src/Airport.cpp
+    src/Camera.h
 )
 
 target_compile_features(airport_simulator PRIVATE cxx_std_17)

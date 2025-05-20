@@ -6,11 +6,6 @@ Plane::Plane() : order(Order::FollowingPath), name(), velocity{ 0, 0, 0 }, accel
 
 }
 
-sf::Vector3f Plane::get_position()
-{
-	return position;
-}
-
 void Plane::set_max_acceleration(float new_acceleration) 
 {
 	if (new_acceleration < 0)
@@ -140,11 +135,10 @@ void Plane::land()
 
 }
 
-void Plane::draw(sf::RenderWindow& window)
+void Plane::draw(sf::RenderWindow& window) const
 {
 	sf::RectangleShape rectangle;
 	rectangle.setPosition(sf::Vector2f(position.x, position.y));
-	//rectangle.setPosition(sf::Vector2f(100, 100));
 	rectangle.setSize(sf::Vector2f(10, 10));
 	rectangle.setFillColor(sf::Color::Red);
 	window.draw(rectangle);

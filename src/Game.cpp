@@ -2,6 +2,7 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <list>
 #include <iostream>
+#include "Camera.h"
 
 Game::Game() : state(GameState::InLobby), current_level(nullptr)
 {
@@ -16,6 +17,8 @@ void Game::launch_game()
 {
 	sf::Clock clock;
 	sf::Time dt;
+	Camera camera(window);
+	camera.set_center(sf::Vector2f(resolution / 2u));
 
 	// For testing
 	Plane plane;
@@ -31,12 +34,30 @@ void Game::launch_game()
 		{
 			if (event->is<sf::Event::Closed>())
 				window.close();
+			else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+			{
+				const sf::Keyboard::Scancode keycode = keyPressed->scancode;
+				if (keycode == sf::Keyboard::Scancode::W)
+					camera.move(sf::Vector2f(0, -4));
+				if (keycode == sf::Keyboard::Scancode::S)
+					camera.move(sf::Vector2f(0, 4));
+				if (keycode == sf::Keyboard::Scancode::A)
+					camera.move(sf::Vector2f(-4, 0));
+				if (keycode == sf::Keyboard::Scancode::D)
+					camera.move(sf::Vector2f(4, 0));
+			}
+			if (const auto* wheel_scrolled = event->getIf<sf::Event::MouseWheelScrolled>())
+			{
+				if (wheel_scrolled->delta > 0)
+					camera.zoom(0.9f);
+				else if (wheel_scrolled->delta < 0)
+					camera.zoom(1.1f);
+			}
 		}
 
 		dt = clock.restart();
 		// Physic sim
 		plane.follow_path(dt);
-		std::cout << plane.get_position().z << '\n';
 
 		// Event handling
 		
