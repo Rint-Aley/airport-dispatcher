@@ -17,15 +17,16 @@ project(airport_simulator)
 add_executable(
     airport_simulator
     src/main.cpp
-    src/Plane.h
-    src/Runway.h
     src/Player.h
     src/Plane.cpp
+    src/Road.cpp
+    src/Runway.cpp
+    src/Airport.cpp
     src/Level.h
     src/LevelInProgress.cpp
     src/Game.cpp
-    src/Airport.cpp
     src/Camera.h
+    src/LevelProducer.h
 )
 
 target_compile_features(airport_simulator PRIVATE cxx_std_17)

@@ -40,4 +40,10 @@ public:
     float get_zoom() const { return current_zoom; }
     const sf::View& get_view() const { return view; }
 };
+
+sf::Vector2f screen_to_world(const sf::Vector2i& screenPos, const sf::RenderWindow& window)
+{
+    return window.mapPixelToCoords(screenPos);
+}
+
 #endif

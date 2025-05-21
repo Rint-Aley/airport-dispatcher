@@ -1,7 +1,12 @@
 #include "Plane.h"
 #include <SFML/Graphics/RectangleShape.hpp>
 
-Plane::Plane() : order(Order::FollowingPath), name(), velocity{ 0, 0, 0 }, acceleration{ 0, 0, 0 }, position{ 0, 0, 0 }, path(), direction{ 0, 0, 0 }, max_velocity_on_the_ground(300), max_acceleration_on_the_ground(30), max_velocity(1000), max_acceleration(1000), max_slowdown_acceleration(100)
+Plane::Plane(std::string name, const sf::Vector3f& intial_position, float max_velocity_on_the_ground, float max_velocity,
+	float max_acceleration_on_the_ground, float max_acceleration, float max_slowdown_acceleration, float launch_speed) :
+	name(name), position(intial_position), max_velocity_on_the_ground(max_velocity_on_the_ground), max_velocity(max_velocity),
+	max_acceleration_on_the_ground(max_acceleration_on_the_ground), max_acceleration(max_acceleration),
+	max_slowdown_acceleration(max_slowdown_acceleration), launch_speed(launch_speed),
+	velocity({ 0, 0, 0 }), acceleration({ 0, 0, 0 }), direction({ 1, 0, 0 }), order(Order::FollowingPath)
 {
 
 }
@@ -135,12 +140,15 @@ void Plane::land()
 
 }
 
-void Plane::draw(sf::RenderWindow& window) const
+void Plane::draw(sf::RenderWindow& window, bool is_selected) const
 {
 	sf::RectangleShape rectangle;
 	rectangle.setPosition(sf::Vector2f(position.x, position.y));
 	rectangle.setSize(sf::Vector2f(10, 10));
-	rectangle.setFillColor(sf::Color::Red);
+	if (is_selected)
+		rectangle.setFillColor(sf::Color::Red);
+	else
+		rectangle.setFillColor(sf::Color::White);
 	window.draw(rectangle);
 }
 

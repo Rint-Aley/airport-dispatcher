@@ -3,6 +3,7 @@
 #include <list>
 #include <iostream>
 #include "Camera.h"
+#include "LevelProducer.h"
 
 Game::Game() : state(GameState::InLobby), current_level(nullptr)
 {
@@ -21,12 +22,14 @@ void Game::launch_game()
 	camera.set_center(sf::Vector2f(resolution / 2u));
 
 	// For testing
-	Plane plane;
+	LevelInProgress a(std::move(LevelProducer::Level1()));
+	current_level = &a;
+	/*Plane plane;
 	std::list<sf::Vector3f> a;
 	a.push_back({ 100, 100, 10 });
 	a.push_back({ 100, 1000, 100 });
 	a.push_back({ 1000, 500, 12 });
-	plane.set_path(a);
+	plane.set_path(a);*/
 
 	while (window.isOpen())
 	{
@@ -53,18 +56,23 @@ void Game::launch_game()
 				else if (wheel_scrolled->delta < 0)
 					camera.zoom(1.1f);
 			}
+			if (const auto* mouse_click = event->getIf<sf::Event::MouseButtonPressed>()) {
+				if (mouse_click->button == sf::Mouse::Button::Left) {
+					current_level->select_closest_plain_in_radius(screen_to_world(mouse_click->position, window), 20);
+				}
+			}
 		}
 
 		dt = clock.restart();
 		// Physic sim
-		plane.follow_path(dt);
+		//plane.follow_path(dt);
 
 		// Event handling
 		
 		// Drawing
 		window.clear();
 
-		plane.draw(window);
+		current_level->draw(window);
 		
 		window.display();
 	}
