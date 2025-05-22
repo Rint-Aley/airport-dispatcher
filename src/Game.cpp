@@ -5,7 +5,7 @@
 #include "Camera.h"
 #include "LevelProducer.h"
 
-Game::Game() : state(GameState::InLobby), current_level(nullptr)
+Game::Game() : state(GameState::InLobby), current_level(nullptr), selection_radius(20)
 {
 	// Should get the settings from the file
 	players = {};
@@ -56,16 +56,26 @@ void Game::launch_game()
 				else if (wheel_scrolled->delta < 0)
 					camera.zoom(1.1f);
 			}
-			if (const auto* mouse_click = event->getIf<sf::Event::MouseButtonPressed>()) {
-				if (mouse_click->button == sf::Mouse::Button::Left) {
-					current_level->select_closest_plain_in_radius(screen_to_world(mouse_click->position, window), 20);
+			if (const auto* mouse_click = event->getIf<sf::Event::MouseButtonPressed>()) 
+			{
+				if (mouse_click->button == sf::Mouse::Button::Left)
+				{
+					current_level->select_closest_plain_in_radius(screen_to_world(mouse_click->position, window), selection_radius);
+				}
+				else if (mouse_click->button == sf::Mouse::Button::Right)
+				{
+					current_level->add_move_point_to_selected_plane(screen_to_world(mouse_click->position, window), selection_radius);
+				}
+				else if (mouse_click->button == sf::Mouse::Button::Middle)
+				{
+					current_level->clear_path_for_selected_plane();
 				}
 			}
 		}
 
 		dt = clock.restart();
 		// Physic sim
-		//plane.follow_path(dt);
+		current_level->calculate_physics(dt);
 
 		// Event handling
 		

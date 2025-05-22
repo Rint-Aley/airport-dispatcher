@@ -29,6 +29,16 @@ void Plane::set_path(const std::list<sf::Vector3f>& path)
 	this->path = path;
 }
 
+void Plane::add_point_to_path(sf::Vector3f point)
+{
+	path.push_back(point);
+}
+
+void Plane::clear_path()
+{
+	path.clear();
+}
+
 void Plane::follow_path(sf::Time dt)
 {
 	if (path.size() == 0)

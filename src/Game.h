@@ -20,6 +20,9 @@ private:
 
 	sf::Vector2u resolution;
 	sf::RenderWindow window;
+
+	// Some settings:
+	float selection_radius;
 public:
 	Game();
 	void launch_game();

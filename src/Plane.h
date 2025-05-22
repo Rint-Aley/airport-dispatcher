@@ -29,10 +29,13 @@ public:
 		float max_acceleration_on_the_ground, float max_acceleration, float max_slowdown_acceleration, float launch_speed);
 
 	sf::Vector3f get_position() const { return position; }
+	const std::list<sf::Vector3f>& get_path() { return path; }
 
 	void set_max_acceleration(float new_acceleration);
 	void set_max_slowdown_accelertion(float new_acceleration);
 	void set_path(const std::list<sf::Vector3f>& path);
+	void add_point_to_path(sf::Vector3f point);
+	void clear_path();
 
 	void follow_path(sf::Time dt);
 	void launch();

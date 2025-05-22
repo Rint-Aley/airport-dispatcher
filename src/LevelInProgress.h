@@ -17,6 +17,8 @@ public:
 	void draw(sf::RenderWindow& window) const;
 
 	void select_closest_plain_in_radius(sf::Vector2f position, float radius);
+	void add_move_point_to_selected_plane(sf::Vector2f approximate_destination, float radius);
+	void clear_path_for_selected_plane();
 };
 
 #endif
