@@ -61,10 +61,9 @@ void Game::launch_game()
 			}
 			if (const auto* wheel_scrolled = event->getIf<sf::Event::MouseWheelScrolled>())
 			{
-				if (wheel_scrolled->delta > 0)
-					camera.zoom(0.9f);
-				else if (wheel_scrolled->delta < 0)
-					camera.zoom(1.1f);
+				float factor = (wheel_scrolled->delta > 0 ? 0.9f : 1.1f);
+				sf::Vector2i mouse_pos(wheel_scrolled->position.x, wheel_scrolled->position.y);
+				camera.zoom(factor, mouse_pos);
 			}
 			if (const auto* mouse_click = event->getIf<sf::Event::MouseButtonPressed>()) 
 			{
