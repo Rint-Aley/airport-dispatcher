@@ -2,9 +2,8 @@
 #include "float.h"
 #include <SFML/System/Vector2.hpp>
 
-Airport::Airport(const std::vector<Road*>& roads, std::vector<Runway*> runways) : roads(roads), runways(runways)
-{
-}
+Airport::Airport(const std::vector<Road*>& roads, const std::vector<Runway*>& runways, const std::vector<TakeoffInfo>& schedule) 
+	: roads(roads), runways(runways), take_off_list(schedule) {}
 
 Airport::~Airport()
 {
@@ -18,7 +17,7 @@ Airport::Airport(Airport&& other) noexcept
 {
 	roads = other.roads;
 	runways = other.runways;
-	schedule = other.schedule;
+	take_off_list = other.take_off_list;
 	other.roads.clear();
 }
 
@@ -30,6 +29,20 @@ void Airport::add_road(Road* new_road)
 void Airport::add_runway(Runway* new_runway)
 {
 	runways.push_back(new_runway);
+}
+
+void Airport::add_plane_to_takeoff_list(Plane* plane, Runway* runway)
+{
+	for (auto& takeoff_info : take_off_list)
+		if (takeoff_info.plane == plane)
+			takeoff_info.runway = runway;
+}
+
+void Airport::delete_plane_from_takeoff_list(Plane* plane)
+{
+	for (auto& takeoff_info : take_off_list)
+		if (takeoff_info.plane == plane)
+			takeoff_info.runway = nullptr;
 }
 
 std::optional<sf::Vector2f> Airport::build_path(const sf::Vector3f& initial_position, const sf::Vector2f& approximate_destination, float radius)
@@ -71,6 +84,37 @@ std::optional<sf::Vector2f> Airport::build_path(const sf::Vector3f& initial_posi
 	return std::nullopt;
 }
 
+Runway* Airport::find_runway(sf::Vector2f coordinates)
+{
+	for (auto runway : runways) 
+		if (runway->get_coordinates().first == coordinates || runway->get_coordinates().second == coordinates)
+			return runway;
+	return nullptr;
+}
+
+float Airport::measure_delay(const Plane& plane, float current_time)
+{
+	for (auto& node : take_off_list)
+	{
+		if (node.plane == &plane)
+		{
+			return current_time - node.time;
+		}
+	}
+	return 0.0f;
+}
+
+void Airport::launch_planes(float current_time)
+{
+	for (auto& take_off_info : take_off_list)
+	{
+		if (take_off_info.time <= current_time && take_off_info.runway != nullptr)
+		{
+			take_off_info.plane->prepare_to_launch(*take_off_info.runway);
+		}
+	}
+}
+
 void Airport::draw(sf::RenderWindow& window) const
 {
 	for (auto&& road : roads)
@@ -78,5 +122,3 @@ void Airport::draw(sf::RenderWindow& window) const
 		road->draw(window);
 	}
 }
-
-

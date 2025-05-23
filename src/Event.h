@@ -9,8 +9,7 @@ struct Event {
 		PlaneLand,
 		PlaneCrush,
 	} event;
-	Plane plane;
-	void* additional_info;
+	Plane* plane;
 };
 
 #endif

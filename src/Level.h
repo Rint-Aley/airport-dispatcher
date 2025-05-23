@@ -10,7 +10,7 @@ protected:
 	Airport airport;
 	std::vector<Plane> planes;
 public:
-	Level(Airport&& airport, const std::vector<Plane>& planes) : airport((Airport&&)airport), planes(planes) {}
+	Level(Airport&& airport, std::vector<Plane>&& planes) : airport(std::move(airport)), planes(std::move(planes)) {}
 
 	const std::vector<Plane>& get_planes() const;
 

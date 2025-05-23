@@ -24,12 +24,6 @@ void Game::launch_game()
 	// For testing
 	LevelInProgress a(std::move(LevelProducer::Level1()));
 	current_level = &a;
-	/*Plane plane;
-	std::list<sf::Vector3f> a;
-	a.push_back({ 100, 100, 10 });
-	a.push_back({ 100, 1000, 100 });
-	a.push_back({ 1000, 500, 12 });
-	plane.set_path(a);*/
 
 	while (window.isOpen())
 	{
@@ -48,6 +42,8 @@ void Game::launch_game()
 					camera.move(sf::Vector2f(-4, 0));
 				if (keycode == sf::Keyboard::Scancode::D)
 					camera.move(sf::Vector2f(4, 0));
+				if (keycode == sf::Keyboard::Scancode::E)
+					current_level->toggle_runway_selection_mode();
 			}
 			if (const auto* wheel_scrolled = event->getIf<sf::Event::MouseWheelScrolled>())
 			{
@@ -74,12 +70,11 @@ void Game::launch_game()
 		}
 
 		dt = clock.restart();
-		// Physic sim
-		current_level->calculate_physics(dt);
 
-		// Event handling
+		current_level->calculate_physics(dt);
+		current_level->check_collisions();
+		current_level->handle_events();
 		
-		// Drawing
 		window.clear();
 
 		current_level->draw(window);

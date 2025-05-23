@@ -8,8 +8,11 @@ class LevelInProgress : public Level {
 private:
 	float penalty, time;
 	Plane* selected_plain;
+	bool runway_selection_mode;
 public:
-	LevelInProgress(Level&& base_level) : Level((Level&&)base_level), time(0), penalty(0), selected_plain(nullptr) {}
+	LevelInProgress(Level&& base_level) : Level((Level&&)base_level), time(0), penalty(0), selected_plain(nullptr), runway_selection_mode(false) {}
+
+	void toggle_runway_selection_mode();
 
 	void calculate_physics(sf::Time dt);
 	void check_collisions();

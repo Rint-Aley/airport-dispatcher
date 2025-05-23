@@ -6,9 +6,9 @@ Plane::Plane(std::string name, const sf::Vector3f& intial_position, float max_ve
 	name(name), position(intial_position), max_velocity_on_the_ground(max_velocity_on_the_ground), max_velocity(max_velocity),
 	max_acceleration_on_the_ground(max_acceleration_on_the_ground), max_acceleration(max_acceleration),
 	max_slowdown_acceleration(max_slowdown_acceleration), launch_speed(launch_speed),
-	velocity({ 0, 0, 0 }), acceleration({ 0, 0, 0 }), direction({ 1, 0, 0 }), order(Order::FollowingPath)
+	velocity({ 0, 0, 0 }), acceleration({ 0, 0, 0 }), direction({ 1, 0, 0 }), max_height(100)
 {
-
+	order = position.z > 0 ? Flying : OnTheGround;
 }
 
 void Plane::set_max_acceleration(float new_acceleration) 
@@ -39,6 +39,24 @@ void Plane::clear_path()
 	path.clear();
 }
 
+void Plane::calculate_physics(sf::Time dt)
+{
+	switch (order) {
+	case OnTheGround:
+		follow_path(dt);
+		break;
+	case Flying:
+		follow_path(dt);
+		break;
+	case Launching:
+		launch(dt);
+		break;
+	case Landing:
+		// land(dt);
+		break;
+	}
+}
+
 void Plane::follow_path(sf::Time dt)
 {
 	if (path.size() == 0)
@@ -50,7 +68,7 @@ void Plane::follow_path(sf::Time dt)
 		return;
 	}
 	float max_velocity, max_acceleration;
-	if (order == Order::FollowingPath)
+	if (order == Order::OnTheGround)
 	{
 		max_velocity = max_velocity_on_the_ground;
 		max_acceleration = max_acceleration_on_the_ground;
@@ -126,7 +144,28 @@ void Plane::follow_path(sf::Time dt)
 	}
 }
 
-void Plane::launch()
+void Plane::prepare_to_launch(const Runway& runway)
+{
+	if (order != OnTheGround)
+		return;
+
+	sf::Vector2f position_2d = sf::Vector2f(position.x, position.y);
+	sf::Vector2f runway_direction = runway.get_direciton();
+
+	if (position_2d == runway.get_coordinates().first)
+	{
+		direction = sf::Vector3f(runway_direction.x, runway_direction.y, 0);
+		order = Launching;
+	}
+	else if (position_2d == runway.get_coordinates().second)
+	{
+		runway_direction *= -1.0f;
+		direction = sf::Vector3f(runway_direction.x, runway_direction.y, 0);
+		order = Launching;
+	}
+}
+
+void Plane::launch(sf::Time dt)
 {
 	if (velocity.length() <= launch_speed)
 	{
@@ -134,17 +173,15 @@ void Plane::launch()
 	}
 	else if (velocity.length() >= launch_speed)
 	{
-		direction.z = 1;
-		// normalize direciton
-		acceleration = direction * max_acceleration;
+		order = Flying;
+		path.push_back(position + velocity * 10.0f + sf::Vector3f(0, 0, max_height));
+		return;
 	}
-	// if (position.z >= some value)
-	//		stop rising
-	velocity += acceleration; // * dt
-	position += velocity; // * dt
+	velocity += acceleration * dt.asSeconds();
+	position += velocity * dt.asSeconds();
 }
 
-void Plane::land()
+void Plane::land(sf::Time dt)
 {
 	sf::Vector3f a = *path.begin(), b = *(path.begin()++);
 

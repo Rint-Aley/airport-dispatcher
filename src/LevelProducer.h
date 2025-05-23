@@ -18,7 +18,7 @@ namespace LevelProducer {
 
 		std::vector<Plane> planes;
 		planes.push_back(Plane("plane 1", { 100, 100, 0 }, 100, 300, 20, 50, 15, 200));
-		return Level(Airport(roads, {}), planes);
+		return Level(Airport(roads, { (Runway*)roads[0], (Runway*)roads[1] }, {Airport::TakeoffInfo(0.0f, &planes[0])}), std::move(planes));
 	}
 }
 

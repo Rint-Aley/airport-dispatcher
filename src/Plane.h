@@ -6,20 +6,21 @@
 #include <SFML/System/Vector3.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include "Runway.h"
 
 class Plane {
-private:
+public:
 	enum Order {
-		FollowingPath,
+		OnTheGround,
 		Flying,
 		WaintingForLaunch,
 		Launching,
 		Landing,
 	};
+private:
 	std::string name;
-	float required_length_to_rise, required_length_to_land;
+	float required_length_to_rise, required_length_to_land, max_height;
 	float max_velocity_on_the_ground, max_velocity, max_acceleration_on_the_ground, max_acceleration, max_slowdown_acceleration, launch_speed;
-	//float target_velocity_value;
 	sf::Vector3f velocity, acceleration, position;
 	sf::Vector3f direction;
 	std::list<sf::Vector3f> path;
@@ -30,6 +31,7 @@ public:
 
 	sf::Vector3f get_position() const { return position; }
 	const std::list<sf::Vector3f>& get_path() { return path; }
+	Order get_order() const { return order; }
 
 	void set_max_acceleration(float new_acceleration);
 	void set_max_slowdown_accelertion(float new_acceleration);
@@ -37,9 +39,11 @@ public:
 	void add_point_to_path(sf::Vector3f point);
 	void clear_path();
 
+	void calculate_physics(sf::Time dt);
 	void follow_path(sf::Time dt);
-	void launch();
-	void land();
+	void prepare_to_launch(const Runway& runway);
+	void launch(sf::Time dt);
+	void land(sf::Time dt);
 
 	void draw(sf::RenderWindow& window, bool is_selected = false) const;
 };
