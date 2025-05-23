@@ -4,16 +4,12 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 class Camera {
-private:
     sf::RenderWindow& window;
     sf::View view;
     float current_zoom;
 
 public:
-    Camera(sf::RenderWindow& window) : window(window) {
-        view = window.getDefaultView();
-        current_zoom = 1;
-    }
+    explicit Camera(sf::RenderWindow& window) : window(window), view(window.getDefaultView()), current_zoom(1) {}
 
     void set_center(const sf::Vector2f& center) {
         view.setCenter(center);
@@ -25,9 +21,17 @@ public:
         window.setView(view);
     }
 
-    void zoom(float factor) {
+    void zoom(const float factor, const sf::Vector2i& coord) {
+        const sf::Vector2f before = window.mapPixelToCoords(coord, view);
+
         current_zoom *= factor;
         view.zoom(factor);
+
+        const sf::Vector2f after = window.mapPixelToCoords(coord, view);
+
+        const sf::Vector2f offset = before - after;
+        view.move(offset);
+
         window.setView(view);
     }
 
