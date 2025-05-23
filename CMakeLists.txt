@@ -27,6 +27,8 @@ add_executable(
     src/Game.cpp
     src/Camera.h
     src/LevelProducer.h
+        src/Menu.cpp
+        src/Menu.h
 )
 
 target_compile_features(airport_simulator PRIVATE cxx_std_17)
