@@ -16,18 +16,21 @@ Game::Game() : state(GameState::InLobby), current_level(nullptr), selection_radi
 
 void Game::launch_game()
 {
+	sf::Font font("../assets/fonts/JetBrainsMono-VariableFont_wght.ttf");
 	sf::Clock clock;
 	sf::Time dt;
 	Camera camera(window);
 	camera.set_center(sf::Vector2f(resolution / 2u));
+	RadioButtonGroup button_group;
 
-	// For testing
+	sf::Text penalty_text(font, "Penalty: 0", 24);
+	penalty_text.setFillColor(sf::Color::White);
+
 	LevelInProgress a(std::move(LevelProducer::Level1()));
 	current_level = &a;
 
 	auto& landing_list = current_level->get_landing_list();
-
-	RadioButtonGroup button_group;
+	
 	for (auto& info : landing_list)
 	{
 		button_group.add_button(info->get_name(), sf::Vector2f(100, 30));
@@ -98,6 +101,11 @@ void Game::launch_game()
 			}
 		}
 
+		penalty_text.setString(std::format("Penalty: {}", current_level->get_penalty()));
+		sf::FloatRect textRect = penalty_text.getLocalBounds();
+		penalty_text.setOrigin(textRect.position + textRect.size);
+		penalty_text.setPosition(sf::Vector2f(window.getSize()) - sf::Vector2f(10, 10));
+
 		dt = clock.restart();
 
 		current_level->calculate_physics(dt);
@@ -108,6 +116,7 @@ void Game::launch_game()
 
 		current_level->draw(window);
 		button_group.draw(window);
+		window.draw(penalty_text);
 
 		window.display();
 	}

@@ -49,7 +49,10 @@ void LevelInProgress::handle_events()
 		const Event& event = event_queue.front();
 		if (event.type == Event::Type::PlaneLaunch)
 		{
-			std::cout << "Plane " << event.plane->get_name() << " has been launched\n";
+			float delay = airport.measure_delay(*event.plane, time);
+			if (delay > 10)
+				penalty += delay * 50;
+			std::cout << "Plane " << event.plane->get_name() << " has been launched.\n";
 			if (selected_plain == event.plane)
 				selected_plain = nullptr;
 		}

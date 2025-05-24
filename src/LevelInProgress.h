@@ -17,6 +17,8 @@ public:
 	LevelInProgress(Level&& base_level);
 
 	const std::vector<Plane*>& get_landing_list() const { return landing_list; }
+	float get_penalty() const { return penalty; }
+	float get_time() const { return time; }
 
 	void toggle_runway_selection_mode();
 
