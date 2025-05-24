@@ -1,10 +1,12 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "Octagon.h"
+#include <iostream>
 
 std::vector<OctagonPoint> build_octagon(sf::Vector3f center, float r)
 {
 	std::vector<OctagonPoint> points;
+	points.reserve(8);
 	points.push_back(OctagonPoint({ center.x + r * (float)cos(0), center.y + r * (float)sin(0), 0 }, nullptr));
 	for (size_t i = 1; i < 8; ++i)
 	{

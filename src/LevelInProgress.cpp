@@ -57,10 +57,6 @@ void LevelInProgress::handle_events()
 		{
 			std::cout << "Plane " << event.plane->get_name() << " has been crushed. Game over!\n";
 		}
-		else if (event.type == Event::Type::BuildPath)
-		{
-
-		}
 		event_queue.pop();
 	}
 }
@@ -119,9 +115,11 @@ void LevelInProgress::clear_path_for_selected_plane()
 	selected_plain->set_path({});
 }
 
-void LevelInProgress::accept_request()
+bool LevelInProgress::assign_runway(sf::Vector2f approximate_destination, float radius, Plane* plane)
 {
-
+	auto a = airport.find_runway(approximate_destination, radius);
+	plane->set_landing_runway(a);
+	return a != nullptr;
 }
 
 void LevelInProgress::send_event(const Event& event)

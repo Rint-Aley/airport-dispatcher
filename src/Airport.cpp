@@ -2,8 +2,8 @@
 #include "float.h"
 #include <SFML/System/Vector2.hpp>
 
-Airport::Airport(const std::vector<Road*>& roads, const std::vector<Runway*>& runways, const std::vector<TakeoffInfo>& schedule) 
-	: roads(roads), runways(runways), take_off_list(schedule) {}
+Airport::Airport(const std::vector<Road*>& roads, const std::vector<Runway*>& runways, const std::vector<TakeoffInfo>& schedule,
+	 sf::Vector2f center) : roads(roads), runways(runways), take_off_list(schedule), center(center) {}
 
 Airport::~Airport()
 {
@@ -18,6 +18,7 @@ Airport::Airport(Airport&& other) noexcept
 	roads = other.roads;
 	runways = other.runways;
 	take_off_list = other.take_off_list;
+	center = other.center;
 	other.roads.clear();
 }
 
@@ -43,13 +44,6 @@ void Airport::delete_plane_from_takeoff_list(Plane* plane)
 	for (auto& takeoff_info : take_off_list)
 		if (takeoff_info.plane == plane)
 			takeoff_info.runway = nullptr;
-}
-
-void Airport::change_runway_for_plane(const Plane& plane, Runway* runway)
-{
-	for (auto& landing_info : landing_list)
-		if (landing_info.plane == &plane)
-			landing_info.runway = runway;
 }
 
 std::optional<sf::Vector2f> Airport::build_path(const sf::Vector3f& initial_position, const sf::Vector2f& approximate_destination, float radius)
@@ -97,6 +91,34 @@ Runway* Airport::find_runway(sf::Vector2f coordinates)
 		if (runway->get_coordinates().first == coordinates || runway->get_coordinates().second == coordinates)
 			return runway;
 	return nullptr;
+}
+
+Runway* Airport::find_runway(sf::Vector2f coordinates, float radius)
+{
+	sf::Vector2f destination;
+	bool node_was_found = false;
+	float closest_distance = radius;
+
+	for (auto runway : runways)
+	{
+		auto [begin, end] = runway->get_coordinates();
+		if ((begin - coordinates).length() < closest_distance)
+		{
+			node_was_found = true;
+			destination = begin;
+			closest_distance = (begin - coordinates).length();
+		}
+		else if ((end - coordinates).length() < closest_distance)
+		{
+			node_was_found = true;
+			destination = end;
+			closest_distance = (end - coordinates).length();
+		}
+	}
+	if (node_was_found)
+		return find_runway(destination);
+	else
+		return nullptr;
 }
 
 float Airport::measure_delay(const Plane& plane, float current_time)

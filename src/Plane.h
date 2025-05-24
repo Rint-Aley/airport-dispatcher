@@ -40,7 +40,7 @@ public:
 	const std::string& get_name() const { return name; }
 
 	void set_max_acceleration(float new_acceleration);
-	void set_max_slowdown_accelertion(float new_acceleration);
+	void set_max_slowdown_acceleration(float new_acceleration);
 	void set_path(const std::list<sf::Vector3f>& path);
 	void add_point_to_path(sf::Vector3f point);
 	void clear_path();

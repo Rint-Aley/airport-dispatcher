@@ -4,6 +4,7 @@
 #include "Level.h"
 #include "Plane.h"
 #include "Event.h"
+#include "Airport.h"
 #include <queue>
 
 class LevelInProgress : public Level, public IEventReceiver {
@@ -15,6 +16,8 @@ private:
 public:
 	LevelInProgress(Level&& base_level);
 
+	const std::vector<Plane*>& get_landing_list() const { return landing_list; }
+
 	void toggle_runway_selection_mode();
 
 	void calculate_physics(sf::Time dt);
@@ -25,7 +28,7 @@ public:
 	void select_closest_plain_in_radius(sf::Vector2f position, float radius);
 	void add_move_point_to_selected_plane(sf::Vector2f approximate_destination, float radius);
 	void clear_path_for_selected_plane();
-	void accept_request();
+	bool assign_runway(sf::Vector2f approximate_destination, float radius, Plane* plane);
 
 	void send_event(const Event& event) override;
 };

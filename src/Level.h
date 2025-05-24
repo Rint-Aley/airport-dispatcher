@@ -9,13 +9,10 @@ class Level {
 protected:
 	Airport airport;
 	std::vector<Plane> planes;
+	std::vector<Plane*> landing_list;
 public:
-	Level(Airport&& airport, std::vector<Plane>&& planes) : airport(std::move(airport)), planes(std::move(planes)) {}
-
-	const std::vector<Plane>& get_planes() const;
-
-	void add_plane();
-	
+	Level(Airport&& airport, std::vector<Plane>&& planes, std::vector<Plane*>&& landing_list) :
+		airport(std::move(airport)), planes(std::move(planes)), landing_list(std::move(landing_list)) {}
 };
 
 #endif

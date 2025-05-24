@@ -8,6 +8,7 @@ Plane::Plane(std::string name, const sf::Vector3f& intial_position, float max_ve
 	max_slowdown_acceleration(max_slowdown_acceleration), launch_speed(launch_speed),
 	velocity({ 0, 0, 0 }), acceleration({ 0, 0, 0 }), direction({ 1, 0, 0 }), max_height(100), landing_runway(nullptr)
 {
+	set_max_slowdown_acceleration(max_slowdown_acceleration);
 	order = position.z > 0 ? WaitingForAcceptingRequest : OnTheGround;
 }
 
@@ -19,9 +20,9 @@ void Plane::set_max_acceleration(float new_acceleration)
 	required_length_to_rise = launch_speed * launch_speed / 2 / max_acceleration;
 }
 
-void Plane::set_max_slowdown_accelertion(float new_acceleration)
+void Plane::set_max_slowdown_acceleration(float new_acceleration)
 {
-
+	required_length_to_land = launch_speed * launch_speed / 2 / max_slowdown_acceleration;
 }
 
 void Plane::set_path(const std::list<sf::Vector3f>& path)
@@ -51,7 +52,7 @@ void Plane::set_landing_runway(Runway* runway)
 
 void Plane::generate_circle(sf::Vector2f center)
 {
-	this->circle = build_octagon(sf::Vector3f(center.x, center.y, 0), max_velocity * max_velocity / max_acceleration);
+	this->circle = build_octagon(sf::Vector3f(center.x, center.y, 0), max_velocity * max_velocity / max_acceleration * 5);
 	for (auto& node : this->circle)
 		node.point.z = max_height;
 }
@@ -215,11 +216,11 @@ void Plane::wait_for_request(sf::Time dt)
 			std::swap(a, b);
 		sf::Vector2f direction = (b - a) / (b - a).length();
 		float slowdown_distance = (max_velocity * max_velocity - launch_speed * launch_speed) / 2 / max_slowdown_acceleration;
-		sf::Vector2f slowdown_point = -slowdown_distance * direction;
+		sf::Vector2f slowdown_point = a + -slowdown_distance * direction;
 		path.clear();
 		path.emplace_back(sf::Vector3f(slowdown_point.x, slowdown_point.y, max_height));
 		path.emplace_back(sf::Vector3f(a.x, a.y, 0));
-		path.emplace_back(sf::Vector3f(b.x, b.y, 0));
+		path.emplace_back(sf::Vector3f(a.x, a.y, 0) + sf::Vector3f(direction.x, direction.y, 0) * required_length_to_land);
 		order = Landing;
 	}
 	if (path.size() == 0)
