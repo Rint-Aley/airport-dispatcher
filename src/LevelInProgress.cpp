@@ -7,6 +7,10 @@ LevelInProgress::LevelInProgress(Level&& base_level)
 	for (auto& plane : planes)
 	{
 		plane.set_event_receiver(this);
+		if (plane.get_position().z > 0)
+		{
+			plane.generate_circle(airport.get_center());
+		}
 	}
 }
 
@@ -52,6 +56,10 @@ void LevelInProgress::handle_events()
 		else if (event.type == Event::Type::PlaneCrush)
 		{
 			std::cout << "Plane " << event.plane->get_name() << " has been crushed. Game over!\n";
+		}
+		else if (event.type == Event::Type::BuildPath)
+		{
+
 		}
 		event_queue.pop();
 	}
@@ -109,6 +117,11 @@ void LevelInProgress::clear_path_for_selected_plane()
 	if (selected_plain == nullptr)
 		return;
 	selected_plain->set_path({});
+}
+
+void LevelInProgress::accept_request()
+{
+
 }
 
 void LevelInProgress::send_event(const Event& event)

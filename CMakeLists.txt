@@ -27,7 +27,7 @@ add_executable(
     src/Game.cpp
     src/Camera.h
     src/LevelProducer.h
-)
+ "src/Octagon.cpp" "src/Octagon.h")
 
 target_compile_features(airport_simulator PRIVATE cxx_std_17)
 target_link_libraries(airport_simulator PRIVATE SFML::Graphics)

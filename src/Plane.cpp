@@ -6,9 +6,9 @@ Plane::Plane(std::string name, const sf::Vector3f& intial_position, float max_ve
 	name(name), position(intial_position), max_velocity_on_the_ground(max_velocity_on_the_ground), max_velocity(max_velocity),
 	max_acceleration_on_the_ground(max_acceleration_on_the_ground), max_acceleration(max_acceleration),
 	max_slowdown_acceleration(max_slowdown_acceleration), launch_speed(launch_speed),
-	velocity({ 0, 0, 0 }), acceleration({ 0, 0, 0 }), direction({ 1, 0, 0 }), max_height(100)
+	velocity({ 0, 0, 0 }), acceleration({ 0, 0, 0 }), direction({ 1, 0, 0 }), max_height(100), landing_runway(nullptr)
 {
-	order = position.z > 0 ? Flying : OnTheGround;
+	order = position.z > 0 ? WaitingForAcceptingRequest : OnTheGround;
 }
 
 void Plane::set_max_acceleration(float new_acceleration) 
@@ -44,6 +44,18 @@ void Plane::set_event_receiver(IEventReceiver* event_receiver)
 	this->event_receiver = event_receiver;
 }
 
+void Plane::set_landing_runway(Runway* runway)
+{
+	landing_runway = runway;
+}
+
+void Plane::generate_circle(sf::Vector2f center)
+{
+	this->circle = build_octagon(sf::Vector3f(center.x, center.y, 0), max_velocity * max_velocity / max_acceleration);
+	for (auto& node : this->circle)
+		node.point.z = max_height;
+}
+
 void Plane::calculate_physics(sf::Time dt)
 {
 	switch (order) {
@@ -57,7 +69,10 @@ void Plane::calculate_physics(sf::Time dt)
 		launch(dt);
 		break;
 	case Landing:
-		// land(dt);
+		land(dt);
+		break;
+	case WaitingForAcceptingRequest:
+		wait_for_request(dt);
 		break;
 	}
 }
@@ -184,8 +199,53 @@ void Plane::launch(sf::Time dt)
 
 void Plane::land(sf::Time dt)
 {
-	sf::Vector3f a = *path.begin(), b = *(path.begin()++);
+	follow_path(dt);
+	if (path.size() == 0)
+	{
+		order = OnTheGround;
+	}
+}
 
+void Plane::wait_for_request(sf::Time dt)
+{
+	if (landing_runway != nullptr)
+	{
+		sf::Vector2f pos_2d(position.x, position.y), a = landing_runway->get_coordinates().first, b = landing_runway->get_coordinates().second;
+		if ((pos_2d - a).length() > (pos_2d - b).length())
+			std::swap(a, b);
+		sf::Vector2f direction = (b - a) / (b - a).length();
+		float slowdown_distance = (max_velocity * max_velocity - launch_speed * launch_speed) / 2 / max_slowdown_acceleration;
+		sf::Vector2f slowdown_point = -slowdown_distance * direction;
+		path.clear();
+		path.emplace_back(sf::Vector3f(slowdown_point.x, slowdown_point.y, max_height));
+		path.emplace_back(sf::Vector3f(a.x, a.y, 0));
+		path.emplace_back(sf::Vector3f(b.x, b.y, 0));
+		order = Landing;
+	}
+	if (path.size() == 0)
+	{
+		auto closest_node = circle[0];
+		for (auto& node : circle)
+			if ((node.point - position).length() < (closest_node.point - position).length())
+				closest_node = node;
+		for (int i = 0; i < 4; ++i) // required 4 initial points
+		{
+			path.emplace_back(closest_node.point);
+			closest_node = *closest_node.next;
+		}
+	}
+	else if (path.size() == 2)
+	{
+		for (auto& node : circle)
+		{
+			if (node.point == path.back())
+			{
+				path.emplace_back(node.next->point);
+				break;
+			}
+		}
+	}
+	follow_path(dt);
 }
 
 void Plane::draw(sf::RenderWindow& window, bool is_selected) const
@@ -199,4 +259,3 @@ void Plane::draw(sf::RenderWindow& window, bool is_selected) const
 		rectangle.setFillColor(sf::Color::White);
 	window.draw(rectangle);
 }
-

@@ -6,8 +6,8 @@ class Plane;
 struct Event {
 	enum Type {
 		PlaneLaunch,
-		PlaneLand,
 		PlaneCrush,
+		BuildPath,
 	} type;
 	Plane* plane;
 

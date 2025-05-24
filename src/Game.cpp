@@ -44,6 +44,8 @@ void Game::launch_game()
 					camera.move(sf::Vector2f(4, 0));
 				if (keycode == sf::Keyboard::Scancode::E)
 					current_level->toggle_runway_selection_mode();
+				if (keycode == sf::Keyboard::Scancode::Enter)
+					current_level->accept_request();
 			}
 			if (const auto* wheel_scrolled = event->getIf<sf::Event::MouseWheelScrolled>())
 			{

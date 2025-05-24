@@ -45,6 +45,13 @@ void Airport::delete_plane_from_takeoff_list(Plane* plane)
 			takeoff_info.runway = nullptr;
 }
 
+void Airport::change_runway_for_plane(const Plane& plane, Runway* runway)
+{
+	for (auto& landing_info : landing_list)
+		if (landing_info.plane == &plane)
+			landing_info.runway = runway;
+}
+
 std::optional<sf::Vector2f> Airport::build_path(const sf::Vector3f& initial_position, const sf::Vector2f& approximate_destination, float radius)
 {
 	sf::Vector2f destination;

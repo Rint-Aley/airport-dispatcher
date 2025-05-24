@@ -15,10 +15,18 @@ public:
 		Runway* runway;
 		TakeoffInfo(float time, Plane* plane) : plane(plane), time(time), runway(nullptr) {}
 	};
+	struct LandingInfo {
+		Plane* plane;
+		Runway* runway;
+		LandingInfo(Plane* plane) : plane(plane), runway(nullptr) {}
+	};
 private:
 	std::vector<Road*> roads;
 	std::vector<Runway*> runways;
 	std::vector<TakeoffInfo> take_off_list;
+	std::vector<LandingInfo> landing_list;
+	sf::Vector2f center;
+
 public:
 	Airport(const std::vector<Road*>& roads, const std::vector<Runway*>& runways, const std::vector<TakeoffInfo>& schedule);
 	Airport(Airport& other) = delete;
@@ -27,12 +35,14 @@ public:
 
 	const std::vector<Road*>& get_roads() const { return roads; }
 	const std::vector<Runway*>& get_runways() const { return runways; }
+	sf::Vector2f get_center() const { return center; }
 
 	void add_road(Road* new_road);
 	void add_runway(Runway* new_runway);
 
 	void add_plane_to_takeoff_list(Plane* plane, Runway* runway);
 	void delete_plane_from_takeoff_list(Plane* plane);
+	void change_runway_for_plane(const Plane& plane, Runway* runway);
 
 	// Returns the closest to cursor node that is accessible from the current position
 	std::optional<sf::Vector2f> build_path(const sf::Vector3f& initial_position, const sf::Vector2f& approximate_destination, float radius);
