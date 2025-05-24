@@ -71,16 +71,8 @@ std::optional<sf::Vector2f> Airport::build_path(const sf::Vector3f& initial_posi
 	if (!node_was_found)
 		return std::nullopt;
 
-	std::vector<Road*> destination_roads;
 	for (auto road : roads)
-	{
-		auto [a, b] = road->get_coordinates();
-		if (a == destination || b == destination) 
-			destination_roads.push_back(road);
-	}
-
-	for (auto destination_road : destination_roads)
-		if (destination_road->is_on_the_road(sf::Vector2f(initial_position.x, initial_position.y)))
+		if (road->is_on_the_road(sf::Vector2f(initial_position.x, initial_position.y)) && road->is_on_the_road(destination))
 			return destination;
 	return std::nullopt;
 }

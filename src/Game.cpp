@@ -25,6 +25,9 @@ void Game::launch_game()
 
 	sf::Text penalty_text(font, "Penalty: 0", 24);
 	penalty_text.setFillColor(sf::Color::White);
+	sf::FloatRect textRect = penalty_text.getLocalBounds();
+	penalty_text.setOrigin(textRect.position + textRect.size);
+	penalty_text.setPosition(sf::Vector2f(window.getSize()) - sf::Vector2f(10, 10));
 
 	LevelInProgress a(std::move(LevelProducer::Level1()));
 	current_level = &a;
@@ -83,10 +86,6 @@ void Game::launch_game()
 							auto& ll = const_cast<std::vector<Plane*>&>(current_level->get_landing_list());
 							ll.erase(ll.begin() + del);
 							button_group.delete_button(del);
-							for (auto& info : ll)
-							{
-								button_group.add_button(info->get_name(), sf::Vector2f(100, 30));
-							}
 							button_group.update_positions(window.getSize());
 						}
 					}
@@ -101,10 +100,7 @@ void Game::launch_game()
 		}
 
 		penalty_text.setString(std::format("Penalty: {}", current_level->get_penalty()));
-		sf::FloatRect textRect = penalty_text.getLocalBounds();
-		penalty_text.setOrigin(textRect.position + textRect.size);
-		penalty_text.setPosition(sf::Vector2f(window.getSize()) - sf::Vector2f(10, 10));
-
+		
 		dt = clock.restart();
 
 		current_level->calculate_physics(dt);

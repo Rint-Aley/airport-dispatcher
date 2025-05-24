@@ -2,10 +2,10 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 
 Plane::Plane(std::string name, const sf::Vector3f& intial_position, float max_velocity_on_the_ground, float max_velocity,
-	float max_acceleration_on_the_ground, float max_acceleration, float max_slowdown_acceleration, float launch_speed) :
+	float max_acceleration_on_the_ground, float max_acceleration, float max_slowdown_acceleration, float launch_speed, float cycles_befor_drop) :
 	name(name), position(intial_position), max_velocity_on_the_ground(max_velocity_on_the_ground), max_velocity(max_velocity),
 	max_acceleration_on_the_ground(max_acceleration_on_the_ground), max_acceleration(max_acceleration),
-	max_slowdown_acceleration(max_slowdown_acceleration), launch_speed(launch_speed),
+	max_slowdown_acceleration(max_slowdown_acceleration), launch_speed(launch_speed), cycles_befor_drop(cycles_befor_drop),
 	velocity({ 0, 0, 0 }), acceleration({ 0, 0, 0 }), direction({ 1, 0, 0 }), max_height(100), landing_runway(nullptr)
 {
 	set_max_slowdown_acceleration(max_slowdown_acceleration);
@@ -52,7 +52,7 @@ void Plane::set_landing_runway(Runway* runway)
 
 void Plane::generate_circle(sf::Vector2f center)
 {
-	this->circle = build_octagon(sf::Vector3f(center.x, center.y, 0), max_velocity * max_velocity / max_acceleration * 5);
+	this->circle = build_octagon(sf::Vector3f(center.x, center.y, 0), max_velocity * max_velocity / max_acceleration * 3);
 	for (auto& node : this->circle)
 		node.point.z = max_height;
 }
@@ -237,6 +237,9 @@ void Plane::wait_for_request(sf::Time dt)
 	}
 	else if (path.size() == 2)
 	{
+		cycles_befor_drop -= 1.0 / 8;
+		if (cycles_befor_drop <= 0)
+			event_receiver->send_event(Event(Event::Type::PlaneCrush, this));
 		for (auto& node : circle)
 		{
 			if (node.point == path.back())

@@ -36,7 +36,6 @@ public:
 
 	void add_plane_to_takeoff_list(Plane* plane, Runway* runway);
 	void delete_plane_from_takeoff_list(Plane* plane);
-	void change_runway_for_plane(const Plane& plane, Runway* runway);
 
 	// Returns the closest to cursor node that is accessible from the current position
 	std::optional<sf::Vector2f> build_path(const sf::Vector3f& initial_position, const sf::Vector2f& approximate_destination, float radius);
