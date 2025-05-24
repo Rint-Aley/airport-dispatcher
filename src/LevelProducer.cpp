@@ -61,3 +61,12 @@ Level LevelProducer::get_level(const std::string &name) {
 
     return { Airport(roads, runways), planes };
 }
+
+std::vector<std::string> LevelProducer::list_levels() const {
+    std::vector<std::string> names;
+    const auto& levels_obj = json_data["levels"];
+    for (auto it = levels_obj.begin(); it != levels_obj.end(); ++it) {
+        names.push_back(it.key());
+    }
+    return names;
+}

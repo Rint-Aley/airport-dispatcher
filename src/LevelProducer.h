@@ -26,6 +26,7 @@ public:
 	}
 
 	Level get_level(const std::string& name);
+	[[nodiscard]] std::vector<std::string> list_levels() const;
 
 	// Singleton access
 	LevelProducer(const LevelProducer&) = delete;
