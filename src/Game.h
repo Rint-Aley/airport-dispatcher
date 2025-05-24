@@ -25,7 +25,7 @@ private:
 	float selection_radius;
 public:
 	Game();
-	void launch_game();
+	void launch_level(const std::string& level_name);
 	void save_level();
 };
 

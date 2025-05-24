@@ -1,25 +1,38 @@
 #ifndef LEVEL_PRODUCER_H
 #define LEVEL_PRODUCER_H
 
-#include <vector>
+#include <nlohmann/json.hpp>
+#include <fstream>
 #include "Level.h"
 
-namespace LevelProducer {
-	Level Level1() {
-		std::vector<Road*> roads;
-		roads.push_back(new Runway({ 100, 100 }, { 100, 1000 }, 50, {}));
-		roads.push_back(new Runway({ 500, 100 }, { 500, 1000 }, 50, {}));
-		roads.push_back(new Road({ 100, 100 }, { 500, 100 }, 40, { &roads[0], &roads[1] }));
-		roads.push_back(new Road({ 100, 1000 }, { 500, 1000 }, 40, { &roads[0], &roads[1]}));
-		roads[0]->add_adjacent_road(roads[2]);
-		roads[0]->add_adjacent_road(roads[3]);
-		roads[1]->add_adjacent_road(roads[2]);
-		roads[1]->add_adjacent_road(roads[3]);
+class LevelProducer {
+	nlohmann::json json_data;
 
-		std::vector<Plane> planes;
-		planes.push_back(Plane("plane 1", { 100, 100, 0 }, 100, 300, 20, 50, 15, 200));
-		return Level(Airport(roads, {}), planes);
+	LevelProducer() {
+		std::ifstream ifs("../assets/levels.json");
+		if (!ifs) {
+			throw std::runtime_error("Unable to open assets/levels.json");
+		}
+		ifs >> json_data;
+		if (!json_data.contains("levels") || !json_data["levels"].is_object()) {
+			throw std::runtime_error("Invalid JSON structure: missing 'levels' object");
+		}
 	}
-}
+
+public:
+	static LevelProducer& instance() {
+		static LevelProducer instance;
+		return instance;
+	}
+
+	Level get_level(const std::string& name);
+	[[nodiscard]] std::vector<std::string> list_levels() const;
+
+	// Singleton access
+	LevelProducer(const LevelProducer&) = delete;
+	LevelProducer& operator=(const LevelProducer&) = delete;
+	LevelProducer(LevelProducer&&) = delete;
+	LevelProducer& operator=(LevelProducer&&) = delete;
+};
 
 #endif

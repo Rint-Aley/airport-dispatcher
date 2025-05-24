@@ -1,0 +1,202 @@
+{
+  "levels": {
+    "1": {
+      "roads": [
+        {
+          "id": "r0",
+          "type": "runway",
+          "start": [100, 100],
+          "end": [100, 1000],
+          "width": 50,
+          "adjacent_ids": ["r2", "r3"]
+        },
+        {
+          "id": "r1",
+          "type": "runway",
+          "start": [500, 100],
+          "end": [500, 1000],
+          "width": 50,
+          "adjacent_ids": ["r2", "r3"]
+        },
+        {
+          "id": "r2",
+          "type": "road",
+          "start": [100, 100],
+          "end": [500, 100],
+          "width": 40,
+          "adjacent_ids": ["r0", "r1"]
+        },
+        {
+          "id": "r3",
+          "type": "road",
+          "start": [100, 1000],
+          "end": [500, 1000],
+          "width": 40,
+          "adjacent_ids": ["r0", "r1"]
+        }
+      ],
+      "planes": [
+        {
+          "name": "plane 1",
+          "position": [100, 100, 0],
+          "max_velocity_on_ground": 100,
+          "max_velocity": 300,
+          "max_acceleration_on_ground": 20,
+          "max_acceleration": 50,
+          "max_slowdown_acceleration": 15,
+          "launch_speed": 200
+        }
+      ]
+    },
+    "2": {
+      "roads": [
+        {
+          "id": "r0",
+          "type": "runway",
+          "start": [100, 100],
+          "end": [100, 900],
+          "width": 50,
+          "adjacent_ids": ["t0", "t1", "t2"]
+        },
+        {
+          "id": "r1",
+          "type": "runway",
+          "start": [400, 100],
+          "end": [400, 900],
+          "width": 50,
+          "adjacent_ids": ["t0", "t1", "t2"]
+        },
+        {
+          "id": "t0",
+          "type": "road",
+          "start": [100, 100],
+          "end": [400, 100],
+          "width": 40,
+          "adjacent_ids": ["r0", "r1"]
+        },
+        {
+          "id": "t1",
+          "type": "road",
+          "start": [100, 500],
+          "end": [400, 500],
+          "width": 40,
+          "adjacent_ids": ["r0", "r1"]
+        },
+        {
+          "id": "t2",
+          "type": "road",
+          "start": [100, 900],
+          "end": [400, 900],
+          "width": 40,
+          "adjacent_ids": ["r0", "r1"]
+        }
+      ],
+      "planes": [
+        {
+          "name": "plane A",
+          "position": [100, 100, 0],
+          "max_velocity_on_ground": 120,
+          "max_velocity": 320,
+          "max_acceleration_on_ground": 25,
+          "max_acceleration": 60,
+          "max_slowdown_acceleration": 20,
+          "launch_speed": 180
+        },
+        {
+          "name": "plane B",
+          "position": [100, 500, 0],
+          "max_velocity_on_ground": 110,
+          "max_velocity": 310,
+          "max_acceleration_on_ground": 22,
+          "max_acceleration": 55,
+          "max_slowdown_acceleration": 18,
+          "launch_speed": 190
+        }
+      ]
+    },
+    "3": {
+      "roads": [
+        {
+          "id": "rw0",
+          "type": "runway",
+          "start": [100, 100],
+          "end": [100, 900],
+          "width": 50,
+          "adjacent_ids": ["t0", "t1", "t2"]
+        },
+        {
+          "id": "rw1",
+          "type": "runway",
+          "start": [300, 100],
+          "end": [300, 900],
+          "width": 50,
+          "adjacent_ids": ["t0", "t1", "t2"]
+        },
+        {
+          "id": "rw2",
+          "type": "runway",
+          "start": [500, 100],
+          "end": [500, 900],
+          "width": 50,
+          "adjacent_ids": ["t0", "t1", "t2"]
+        },
+        {
+          "id": "t0",
+          "type": "road",
+          "start": [100, 100],
+          "end": [500, 100],
+          "width": 40,
+          "adjacent_ids": ["rw0", "rw1", "rw2"]
+        },
+        {
+          "id": "t1",
+          "type": "road",
+          "start": [100, 500],
+          "end": [500, 500],
+          "width": 40,
+          "adjacent_ids": ["rw0", "rw1", "rw2"]
+        },
+        {
+          "id": "t2",
+          "type": "road",
+          "start": [100, 900],
+          "end": [500, 900],
+          "width": 40,
+          "adjacent_ids": ["rw0", "rw1", "rw2"]
+        }
+      ],
+      "planes": [
+        {
+          "name": "plane X",
+          "position": [100, 100, 0],
+          "max_velocity_on_ground": 130,
+          "max_velocity": 330,
+          "max_acceleration_on_ground": 30,
+          "max_acceleration": 65,
+          "max_slowdown_acceleration": 22,
+          "launch_speed": 210
+        },
+        {
+          "name": "plane Y",
+          "position": [300, 100, 0],
+          "max_velocity_on_ground": 115,
+          "max_velocity": 305,
+          "max_acceleration_on_ground": 27,
+          "max_acceleration": 58,
+          "max_slowdown_acceleration": 19,
+          "launch_speed": 195
+        },
+        {
+          "name": "plane Z",
+          "position": [500, 100, 0],
+          "max_velocity_on_ground": 125,
+          "max_velocity": 315,
+          "max_acceleration_on_ground": 28,
+          "max_acceleration": 62,
+          "max_slowdown_acceleration": 21,
+          "launch_speed": 205
+        }
+      ]
+    }
+  }
+}

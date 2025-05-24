@@ -14,7 +14,7 @@ Game::Game() : state(GameState::InLobby), current_level(nullptr), selection_radi
 	window = sf::RenderWindow(sf::VideoMode(resolution), "Airport", sf::Style::Default, sf::State::Windowed);
 }
 
-void Game::launch_game()
+void Game::launch_level(const std::string& level_name)
 {
 	sf::Clock clock;
 	sf::Time dt;
@@ -22,7 +22,7 @@ void Game::launch_game()
 	camera.set_center(sf::Vector2f(resolution / 2u));
 
 	// For testing
-	LevelInProgress a(std::move(LevelProducer::Level1()));
+	LevelInProgress a(std::move(LevelProducer::instance().get_level(level_name)));
 	current_level = &a;
 	/*Plane plane;
 	std::list<sf::Vector3f> a;

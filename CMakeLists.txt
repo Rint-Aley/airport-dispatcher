@@ -12,6 +12,10 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
+FetchContent_Declare(json
+        URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
+FetchContent_MakeAvailable(json)
+
 project(airport_simulator)
 
 add_executable(
@@ -27,9 +31,10 @@ add_executable(
     src/Game.cpp
     src/Camera.h
     src/LevelProducer.h
-        src/Menu.cpp
-        src/Menu.h
+    src/Menu.cpp
+    src/Menu.h
+        src/LevelProducer.cpp
 )
 
 target_compile_features(airport_simulator PRIVATE cxx_std_17)
-target_link_libraries(airport_simulator PRIVATE SFML::Graphics)
+target_link_libraries(airport_simulator PRIVATE SFML::Graphics nlohmann_json::nlohmann_json)

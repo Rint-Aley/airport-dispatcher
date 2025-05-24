@@ -40,7 +40,7 @@ int main() {
 
     if(selectedLevel != -1){
         Game game;
-        game.launch_game();
+        game.launch_level(std::to_string(selectedLevel + 1));
     }
 
     return 0;
