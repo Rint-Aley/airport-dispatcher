@@ -6,9 +6,32 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <string>
+#include <iostream>
+
 
 class Menu {
 private:
+    class PopupWindow {
+    private:
+        sf::RectangleShape background;
+        sf::RectangleShape popup;
+        sf::Text message;
+        sf::Text closeButton;
+        sf::Text startButton;
+
+    public:
+        PopupWindow(sf::RenderWindow &window, sf::Font &font);
+
+        void draw(sf::RenderWindow &window,  bool isNickNameIsEmpty, int& level);
+
+        bool closeButtonClick(sf::Vector2f mousePos);
+
+        bool startButtonClick(sf::Vector2f mousePos);
+    };
+
     sf::RenderWindow &window;
     sf::Font font;
 
@@ -20,12 +43,19 @@ private:
     sf::RectangleShape nicknameBox;
     sf::Text nicknameText;
 
+    PopupWindow levelSelectedPopup;
+
     // состояния
     int selectedLevel = -1;
-    bool showStats = false;
     std::string playerNickname;
-    bool typingNickname = false;
 
+    enum class States {
+        MAIN_MENU,
+        STATISTIC,
+        TYPING_NICKNAME,
+        POPUP,
+    };
+    States state;
 public:
     Menu(sf::RenderWindow &win);
 
@@ -48,6 +78,8 @@ public:
 
     void handleStatsButtonClick();
 
+
+    void handlePopupButtonsClick();
 
     void handleTextInput(char32_t symb);
 

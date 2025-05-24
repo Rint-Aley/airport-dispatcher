@@ -19,14 +19,12 @@ int main() {
         menu.handleStatsButtonClick();
         menu.handleLevelsButtonClick();
         menu.handlePlayerBoxClick();
+        menu.handlePopupButtonsClick();
     };
 
     while (window.isOpen()) {
         window.handleEvents(onClose, onTextEntered, onLeftMousePressed);
         menu.handleMouseOn();
-
-        if(menu.getSelectedLevel() != -1)
-            window.close();
 
         window.clear(sf::Color(30, 30, 45));
         menu.draw();
@@ -38,7 +36,6 @@ int main() {
     if (selectedLevel != -1) {
         std::cout << "Level " << selectedLevel + 1 << " selected by "
                   << name << std::endl;
-        window.close();
     }
 
     if(selectedLevel != -1){
