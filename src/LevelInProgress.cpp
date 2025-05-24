@@ -1,6 +1,15 @@
 #include "LevelInProgress.h"
 #include <iostream>
 
+LevelInProgress::LevelInProgress(Level&& base_level)
+	: Level((Level&&)base_level), time(0), penalty(0), selected_plain(nullptr), runway_selection_mode(false), event_queue()
+{
+	for (auto& plane : planes)
+	{
+		plane.set_event_receiver(this);
+	}
+}
+
 void LevelInProgress::toggle_runway_selection_mode()
 {
 	runway_selection_mode = !runway_selection_mode;
@@ -17,10 +26,35 @@ void LevelInProgress::calculate_physics(sf::Time dt)
 
 void LevelInProgress::check_collisions()
 {
+	for (size_t i = 0; i < planes.size(); ++i) 
+	{
+		for (size_t j = i + 1; j < planes.size(); ++j)
+		{
+			if ((planes[i].get_position() - planes[j].get_position()).length() < 30) // number is the sum of collision models
+			{
+				send_event(Event(Event::Type::PlaneCrush, &planes[i]));
+			}
+		}
+	}
 }
 
 void LevelInProgress::handle_events()
 {
+	while (!event_queue.empty())
+	{
+		const Event& event = event_queue.front();
+		if (event.type == Event::Type::PlaneLaunch)
+		{
+			std::cout << "Plane " << event.plane->get_name() << " has been launched\n";
+			if (selected_plain == event.plane)
+				selected_plain = nullptr;
+		}
+		else if (event.type == Event::Type::PlaneCrush)
+		{
+			std::cout << "Plane " << event.plane->get_name() << " has been crushed. Game over!\n";
+		}
+		event_queue.pop();
+	}
 }
 
 void LevelInProgress::draw(sf::RenderWindow& window) const
@@ -75,4 +109,9 @@ void LevelInProgress::clear_path_for_selected_plane()
 	if (selected_plain == nullptr)
 		return;
 	selected_plain->set_path({});
+}
+
+void LevelInProgress::send_event(const Event& event)
+{
+	event_queue.push(event);
 }

@@ -110,7 +110,7 @@ void Airport::launch_planes(float current_time)
 	{
 		if (take_off_info.time <= current_time && take_off_info.runway != nullptr)
 		{
-			take_off_info.plane->prepare_to_launch(*take_off_info.runway);
+			take_off_info.plane->prepare_to_launch(*take_off_info.runway);				
 		}
 	}
 }

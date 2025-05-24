@@ -3,14 +3,17 @@
 
 #include "Level.h"
 #include "Plane.h"
+#include "Event.h"
+#include <queue>
 
-class LevelInProgress : public Level {
+class LevelInProgress : public Level, public IEventReceiver {
 private:
 	float penalty, time;
 	Plane* selected_plain;
 	bool runway_selection_mode;
+	std::queue<Event> event_queue;
 public:
-	LevelInProgress(Level&& base_level) : Level((Level&&)base_level), time(0), penalty(0), selected_plain(nullptr), runway_selection_mode(false) {}
+	LevelInProgress(Level&& base_level);
 
 	void toggle_runway_selection_mode();
 
@@ -22,6 +25,8 @@ public:
 	void select_closest_plain_in_radius(sf::Vector2f position, float radius);
 	void add_move_point_to_selected_plane(sf::Vector2f approximate_destination, float radius);
 	void clear_path_for_selected_plane();
+
+	void send_event(const Event& event) override;
 };
 
 #endif

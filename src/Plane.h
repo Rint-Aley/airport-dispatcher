@@ -7,6 +7,7 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include "Runway.h"
+#include "Event.h"
 
 class Plane {
 public:
@@ -25,6 +26,7 @@ private:
 	sf::Vector3f direction;
 	std::list<sf::Vector3f> path;
 	Order order;
+	IEventReceiver* event_receiver;
 public:
 	Plane(std::string name, const sf::Vector3f& intial_position, float max_velocity_on_the_ground, float max_velocity, 
 		float max_acceleration_on_the_ground, float max_acceleration, float max_slowdown_acceleration, float launch_speed);
@@ -32,12 +34,14 @@ public:
 	sf::Vector3f get_position() const { return position; }
 	const std::list<sf::Vector3f>& get_path() { return path; }
 	Order get_order() const { return order; }
+	const std::string& get_name() const { return name; }
 
 	void set_max_acceleration(float new_acceleration);
 	void set_max_slowdown_accelertion(float new_acceleration);
 	void set_path(const std::list<sf::Vector3f>& path);
 	void add_point_to_path(sf::Vector3f point);
 	void clear_path();
+	void set_event_receiver(IEventReceiver* event_receiver);
 
 	void calculate_physics(sf::Time dt);
 	void follow_path(sf::Time dt);

@@ -39,6 +39,11 @@ void Plane::clear_path()
 	path.clear();
 }
 
+void Plane::set_event_receiver(IEventReceiver* event_receiver)
+{
+	this->event_receiver = event_receiver;
+}
+
 void Plane::calculate_physics(sf::Time dt)
 {
 	switch (order) {
@@ -151,17 +156,13 @@ void Plane::prepare_to_launch(const Runway& runway)
 
 	sf::Vector2f position_2d = sf::Vector2f(position.x, position.y);
 	sf::Vector2f runway_direction = runway.get_direciton();
-
-	if (position_2d == runway.get_coordinates().first)
-	{
-		direction = sf::Vector3f(runway_direction.x, runway_direction.y, 0);
-		order = Launching;
-	}
-	else if (position_2d == runway.get_coordinates().second)
-	{
+	if (position_2d == runway.get_coordinates().second)
 		runway_direction *= -1.0f;
+	if (position_2d == runway.get_coordinates().first || position_2d == runway.get_coordinates().second)
+	{
 		direction = sf::Vector3f(runway_direction.x, runway_direction.y, 0);
 		order = Launching;
+		event_receiver->send_event(Event(Event::Type::PlaneLaunch, this));
 	}
 }
 
