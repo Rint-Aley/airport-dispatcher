@@ -69,13 +69,13 @@ void Game::launch_game()
 			{
 				if (mouse_click->button == sf::Mouse::Button::Left)
 				{
-					current_level->select_closest_plain_in_radius(screen_to_world(mouse_click->position, window), selection_radius);
+					current_level->select_closest_plain_in_radius(window.mapPixelToCoords(mouse_click->position, camera.get_view()), selection_radius);
 				}
 				else if (mouse_click->button == sf::Mouse::Button::Right)
 				{
 					if (button_group.get_selected_index() != -1)
 					{
-						if (current_level->assign_runway(screen_to_world(mouse_click->position, window), selection_radius,
+						if (current_level->assign_runway(window.mapPixelToCoords(mouse_click->position, camera.get_view()), selection_radius,
 							landing_list[button_group.get_selected_index()]))
 						{
 							auto del = button_group.get_selected_index();
@@ -91,7 +91,7 @@ void Game::launch_game()
 						}
 					}
 					else 
-						current_level->add_move_point_to_selected_plane(screen_to_world(mouse_click->position, window), selection_radius);
+						current_level->add_move_point_to_selected_plane(window.mapPixelToCoords(mouse_click->position, camera.get_view()), selection_radius);
 				}
 				else if (mouse_click->button == sf::Mouse::Button::Middle)
 				{
@@ -113,7 +113,10 @@ void Game::launch_game()
 		
 		window.clear();
 
+		window.setView(camera.get_view());
 		current_level->draw(window);
+
+		window.setView(window.getDefaultView());
 		button_group.draw(window);
 		window.draw(penalty_text);
 
