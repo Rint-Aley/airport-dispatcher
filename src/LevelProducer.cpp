@@ -70,3 +70,12 @@ std::vector<std::string> LevelProducer::list_levels() const {
     }
     return names;
 }
+
+std::pair<size_t, size_t> LevelProducer::get_level_info(const std::string &name) {
+    const auto& levels_obj = json_data["levels"];
+    if (!levels_obj.contains(name)) {
+        throw std::out_of_range("Level name '" + name + "' not found in JSON");
+    }
+    const auto& jlvl = levels_obj[name];
+    return {jlvl["roads"].size(), jlvl["planes"].size()};
+}

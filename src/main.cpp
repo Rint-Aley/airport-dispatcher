@@ -31,16 +31,16 @@ int main() {
         window.display();
     }
 
-    int selectedLevel = menu.getSelectedLevel();
+    auto selectedLevel = menu.getSelectedLevel();
     std::string name = menu.getPlayerNickname();
-    if (selectedLevel != -1) {
-        std::cout << "Level " << selectedLevel + 1 << " selected by "
+    if (!selectedLevel.empty()) {
+        std::cout << "Level " << selectedLevel << " selected by "
                   << name << std::endl;
     }
 
-    if(selectedLevel != -1){
+    if(!selectedLevel.empty()){
         Game game;
-        game.launch_level(std::to_string(selectedLevel + 1));
+        game.launch_level(selectedLevel);
     }
 
     return 0;

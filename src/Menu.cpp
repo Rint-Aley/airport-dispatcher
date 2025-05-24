@@ -1,4 +1,5 @@
 #include "Menu.h"
+#include "LevelProducer.h"
 
 Menu::Menu(sf::RenderWindow &win) : window(win),
                                     font("../assets/fonts/JetBrainsMono-VariableFont_wght.ttf"),
@@ -25,10 +26,13 @@ Menu::Menu(sf::RenderWindow &win) : window(win),
     nicknameText.setFillColor(sf::Color::White);
     nicknameText.setPosition({static_cast<float>(win.getSize().x - 205), 20});
 
-
-    levelNames = {"Level1", "Level2", "Level3", "Level4", "Level4"};
-    for (size_t i = 0; i < levelNames.size(); ++i) {
-        sf::Text button(font, levelNames[i]);
+    auto levelsNames = LevelProducer::instance().list_levels();
+    for (int i = 0; i < levelsNames.size(); ++i) {
+        auto [roadsCount, planesCount] = LevelProducer::instance().get_level_info(levelsNames[i]);
+        levels.push_back({levelsNames[i], roadsCount, planesCount});
+    }
+    for (size_t i = 0; i < levelsNames.size(); ++i) {
+        sf::Text button(font, levelsNames[i]);
         button.setCharacterSize(30);
         button.setFillColor(sf::Color::White);
 
@@ -56,7 +60,7 @@ void Menu::draw() {
         window.draw(nicknameText);
         window.draw(statsButton);
     } else if (state == States::POPUP) {
-        levelSelectedPopup.draw(window, playerNickname.empty(), selectedLevel);
+        levelSelectedPopup.draw(window, playerNickname.empty(), selectedLevel, levels);
     }
 }
 
@@ -159,11 +163,11 @@ void Menu::handlePlayerBoxClick() {
 
 void Menu::handlePopupButtonsClick() {
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-    if(levelSelectedPopup.closeButtonClick(mousePos)){
+    if (levelSelectedPopup.closeButtonClick(mousePos)) {
         selectedLevel = -1;
         state = States::MAIN_MENU;
     }
-    if(levelSelectedPopup.startButtonClick(mousePos) && selectedLevel != -1){
+    if (levelSelectedPopup.startButtonClick(mousePos) && selectedLevel != -1) {
         window.close();
     }
 }
@@ -189,17 +193,18 @@ void Menu::handleTextInput(char32_t symb) {
     }
 }
 
-int Menu::getSelectedLevel() const {
-    return selectedLevel;
+std::string Menu::getSelectedLevel() const {
+    return selectedLevel == -1 ? "" : levels[selectedLevel].name;
 }
 
 std::string Menu::getPlayerNickname() const {
     return playerNickname;
 }
 
-Menu::PopupWindow::PopupWindow(sf::RenderWindow &window, sf::Font &font) : message(font, ""),
+Menu::PopupWindow::PopupWindow(sf::RenderWindow &window, sf::Font &font) : message(font, ""), continueAgreement(font),
                                                                            closeButton(font, "Close"),
-                                                                           startButton(font, "Start") {
+                                                                           startButton(font, "Start"), roadsCount(font),
+                                                                           planesCount(font) {
     // Затемненный фон
     background.setSize(sf::Vector2f(window.getSize()));
     background.setFillColor(sf::Color(30, 30, 45, 150)); // Полупрозрачный черный
@@ -216,6 +221,23 @@ Menu::PopupWindow::PopupWindow(sf::RenderWindow &window, sf::Font &font) : messa
     message.setFillColor(sf::Color::White);
     message.setPosition({popup.getPosition().x + 20, popup.getPosition().y + 30});
 
+    // Текст сообщения
+    continueAgreement.setString("Do you want to continue?");
+    continueAgreement.setCharacterSize(24);
+    continueAgreement.setFillColor(sf::Color::White);
+    continueAgreement.setPosition(
+            {popup.getPosition().x + popup.getSize().x / 2 - continueAgreement.getGlobalBounds().size.x/2,
+             popup.getPosition().y + popup.getSize().y - 120});
+
+    // Информация об уровне
+    roadsCount.setCharacterSize(24);
+    roadsCount.setFillColor(sf::Color::White);
+    roadsCount.setPosition({popup.getPosition().x + 20, popup.getPosition().y + 90});
+
+    planesCount.setCharacterSize(24);
+    planesCount.setFillColor(sf::Color::White);
+    planesCount.setPosition({popup.getPosition().x + 20, popup.getPosition().y + 120});
+
     // Кнопка закрытия
     closeButton.setCharacterSize(30);
     closeButton.setFillColor(sf::Color::White);
@@ -229,17 +251,22 @@ Menu::PopupWindow::PopupWindow(sf::RenderWindow &window, sf::Font &font) : messa
              popup.getPosition().y + popup.getSize().y - 40});
 }
 
-void Menu::PopupWindow::draw(sf::RenderWindow &window, bool isNickNameIsEmpty, int& level) {
+void
+Menu::PopupWindow::draw(sf::RenderWindow &window, bool NickNameIsEmpty, int &level, std::vector<LevelInfo> &levels) {
     window.draw(background);
     window.draw(popup);
-    if(isNickNameIsEmpty){
-        level=-1;
+    if (NickNameIsEmpty) {
         message.setString("Nickname is empty, please enter your name");
         window.draw(message);
         window.draw(closeButton);
-    }else{
-        message.setString("Level " +std::to_string(level+1)+ " is chosen. Do you want to play?");
+    } else {
+        message.setString("Level " + levels[level].name + " is chosen.");
+        roadsCount.setString("Number of roads: " + std::to_string(levels[level].roadsCount));
+        window.draw(roadsCount);
+        planesCount.setString("Number of planes: " + std::to_string(levels[level].planesCount));
+        window.draw(planesCount);
         window.draw(message);
+        window.draw(continueAgreement);
         window.draw(closeButton);
         window.draw(startButton);
     }

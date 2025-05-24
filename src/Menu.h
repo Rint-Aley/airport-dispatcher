@@ -14,18 +14,27 @@
 
 class Menu {
 private:
+    struct LevelInfo{
+        std::string name;
+        size_t roadsCount;
+        size_t planesCount;
+    };
+    std::vector<LevelInfo> levels;
     class PopupWindow {
     private:
         sf::RectangleShape background;
         sf::RectangleShape popup;
         sf::Text message;
+        sf::Text continueAgreement;
+        sf::Text roadsCount;
+        sf::Text planesCount;
         sf::Text closeButton;
         sf::Text startButton;
 
     public:
         PopupWindow(sf::RenderWindow &window, sf::Font &font);
 
-        void draw(sf::RenderWindow &window,  bool isNickNameIsEmpty, int& level);
+        void draw(sf::RenderWindow &window,  bool isNickNameIsEmpty, int& level, std::vector<LevelInfo>& levels);
 
         bool closeButtonClick(sf::Vector2f mousePos);
 
@@ -37,7 +46,6 @@ private:
 
     // кнопки
     std::vector<sf::Text> levelButtons;
-    std::vector<std::string> levelNames;
     sf::Text title;
     sf::Text statsButton;
     sf::RectangleShape nicknameBox;
@@ -83,7 +91,7 @@ public:
 
     void handleTextInput(char32_t symb);
 
-    int getSelectedLevel() const;
+    std::string getSelectedLevel() const;
 
     std::string getPlayerNickname() const;
 };
