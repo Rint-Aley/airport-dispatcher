@@ -23,11 +23,10 @@ void Game::launch_game()
 	camera.set_center(sf::Vector2f(resolution / 2u));
 	RadioButtonGroup button_group;
 
-	sf::Text penalty_text(font, "Penalty: 0", 24);
+	sf::Text penalty_text(font, "Penalty: 0.00", 24);
+	sf::Text time_text(font, "Time: 0.00", 24);
 	penalty_text.setFillColor(sf::Color::White);
-	sf::FloatRect textRect = penalty_text.getLocalBounds();
-	penalty_text.setOrigin(textRect.position + textRect.size);
-	penalty_text.setPosition(sf::Vector2f(window.getSize()) - sf::Vector2f(10, 10));
+	time_text.setFillColor(sf::Color::White);
 
 	LevelInProgress a(std::move(LevelProducer::Level1()));
 	current_level = &a;
@@ -99,8 +98,16 @@ void Game::launch_game()
 			}
 		}
 
-		penalty_text.setString(std::format("Penalty: {}", current_level->get_penalty()));
-		
+		penalty_text.setString(std::format("Penalty: {:.2f}", current_level->get_penalty()));
+		sf::FloatRect textRect = penalty_text.getLocalBounds();
+		penalty_text.setOrigin(textRect.position + textRect.size);
+		penalty_text.setPosition(sf::Vector2f(window.getSize()) - sf::Vector2f(10, 10));
+
+		time_text.setString(std::format("Time: {:.2f}", current_level->get_time()));
+		textRect = time_text.getLocalBounds();
+		time_text.setOrigin(textRect.position + textRect.size);
+		time_text.setPosition(sf::Vector2f(window.getSize()) - sf::Vector2f(10, 50));
+
 		dt = clock.restart();
 
 		current_level->calculate_physics(dt);
@@ -115,6 +122,7 @@ void Game::launch_game()
 		window.setView(window.getDefaultView());
 		button_group.draw(window);
 		window.draw(penalty_text);
+		window.draw(time_text);
 
 		window.display();
 	}
