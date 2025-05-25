@@ -29,6 +29,7 @@ public:
 
 	const std::vector<Road*>& get_roads() const { return roads; }
 	const std::vector<Runway*>& get_runways() const { return runways; }
+	const std::vector<TakeoffInfo>& get_take_off_list() const { return take_off_list; }
 	sf::Vector2f get_center() const { return center; }
 
 	void add_road(Road* new_road);

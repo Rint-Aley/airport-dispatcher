@@ -14,6 +14,17 @@ LevelInProgress::LevelInProgress(Level&& base_level)
 	}
 }
 
+std::optional<LevelInProgress::PlaneInfo> LevelInProgress::get_info_on_plane(Plane* plane) const
+{
+	for (auto& p : landing_list)
+		if (p == plane)
+			return PlaneInfo(PlaneInfo::Land, 0.f, p->get_cycles_befor_drop());
+	for (auto& take_off_info : airport.get_take_off_list())
+		if (take_off_info.plane == plane)
+			return PlaneInfo(PlaneInfo::TakeOff, take_off_info.time, 0.f);
+	return std::optional<PlaneInfo>();
+}
+
 void LevelInProgress::toggle_runway_selection_mode()
 {
 	runway_selection_mode = !runway_selection_mode;

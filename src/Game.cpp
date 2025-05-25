@@ -25,8 +25,10 @@ void Game::launch_game()
 
 	sf::Text penalty_text(font, "Penalty: 0.00", 24);
 	sf::Text time_text(font, "Time: 0.00", 24);
+	sf::Text plane_info_text(font, "", 24);
 	penalty_text.setFillColor(sf::Color::White);
 	time_text.setFillColor(sf::Color::White);
+	plane_info_text.setFillColor(sf::Color::White);
 
 	LevelInProgress a(std::move(LevelProducer::Level1()));
 	current_level = &a;
@@ -108,6 +110,32 @@ void Game::launch_game()
 		time_text.setOrigin(textRect.position + textRect.size);
 		time_text.setPosition(sf::Vector2f(window.getSize()) - sf::Vector2f(10, 50));
 
+		if (current_level->get_selected_plane() != nullptr)
+		{
+			auto info = current_level->get_info_on_plane(current_level->get_selected_plane());
+			if (info.has_value())
+			{
+				auto i = info.value();
+				plane_info_text.setString(std::format("Goal: {}, Time: {:.2f}", (i.goal == i.TakeOff ? "take off" : "land"), i.time));
+			}
+		}
+		else if (button_group.get_selected_index() != -1)
+		{
+			auto info = current_level->get_info_on_plane(landing_list[button_group.get_selected_index()]);
+			if (info.has_value())
+			{
+				auto i = info.value();
+				plane_info_text.setString(std::format("Goal: land; Cycles remain: {:.2f}", i.cycles));
+			}
+		}
+		else {
+			plane_info_text.setString("");
+		}
+		textRect = plane_info_text.getLocalBounds();
+		plane_info_text.setOrigin(textRect.position);
+		plane_info_text.setPosition(sf::Vector2f(window.getSize()) - sf::Vector2f(window.getSize().x - 10, 30));
+
+
 		dt = clock.restart();
 
 		current_level->calculate_physics(dt);
@@ -123,6 +151,7 @@ void Game::launch_game()
 		button_group.draw(window);
 		window.draw(penalty_text);
 		window.draw(time_text);
+		window.draw(plane_info_text);
 
 		window.display();
 	}
